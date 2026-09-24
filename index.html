@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <!-- ====== META TAG PWA / MOBILE ====== -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="description" content="RECA – Turni di casa: bucato, cucina, bagni e sala. Semplice, chiaro, sempre aggiornato.">
+  <meta name="theme-color" content="#000000">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="RECA">
+  <meta name="format-detection" content="telephone=no">
+  <!-- ====== PWA MANIFEST & ICONE ====== -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <!-- ====== STILI ====== -->
+  <link rel="stylesheet" href="style.css">
+  <title>RECA – Turni di Casa</title>
+</head>
+<body>
+  <!-- Bordo LED RGB animato (Siri Glow) – pointer-events:none, non copre i contenuti -->
+  <div id="siri-glow" class="siri-glow" aria-hidden="true"></div>
+
+  <div id="app">
+
+    <!-- ============ SCHERMATA: CODICE SEGRETO DELLA CASA ============ -->
+    <section id="screen-gate" class="screen">
+      <div class="gate-box">
+        <img src="icons/icon-192.png" alt="RECA" class="gate-logo">
+        <h1 class="gate-title">RECA</h1>
+        <p class="gate-sub">Casa in comune</p>
+        <div id="gate-body">
+          <label class="field-label" for="gate-code-input">Codice Segreto della Casa</label>
+          <input type="password" id="gate-code-input" class="input" inputmode="text" autocomplete="off" placeholder="Inserisci il codice">
+          <div id="gate-error" class="error-msg" hidden></div>
+          <button id="gate-btn" class="btn btn-primary btn-big">Entra in casa</button>
+          <p class="hint" id="gate-hint"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SCHERMATA: LOGIN / REGISTRAZIONE ============ -->
+    <section id="screen-login" class="screen" hidden>
+      <div class="login-box">
+        <img src="icons/icon-192.png" alt="RECA" class="gate-logo">
+        <h1 class="gate-title">RECA</h1>
+        <p class="gate-sub">Accedi con la tua email e il tuo nome vero</p>
+
+        <div class="tabs">
+          <button class="tab active" id="tab-login" type="button">Accedi</button>
+          <button class="tab" id="tab-register" type="button">Crea account</button>
+        </div>
+
+        <!-- Login -->
+        <form id="form-login" class="login-form">
+          <label class="field-label" for="login-email">Email</label>
+          <input type="email" id="login-email" class="input" placeholder="es. elia@email.com" autocomplete="email" required>
+          <label class="field-label" for="login-pass">Password</label>
+          <input type="password" id="login-pass" class="input" placeholder="La tua password" autocomplete="current-password" required>
+          <div id="login-error" class="error-msg" hidden></div>
+          <button type="submit" class="btn btn-primary btn-big">Accedi</button>
+        </form>
+
+        <!-- Registrazione -->
+        <form id="form-register" class="login-form" hidden>
+          <label class="field-label" for="reg-name">Il tuo nome vero</label>
+          <input type="text" id="reg-name" class="input" placeholder="es. Elia" autocomplete="name" required>
+          <label class="field-label" for="reg-email">Email</label>
+          <input type="email" id="reg-email" class="input" placeholder="es. elia@email.com" autocomplete="email" required>
+          <label class="field-label" for="reg-pass">Scegli una password</label>
+          <input type="password" id="reg-pass" class="input" placeholder="Minimo 4 caratteri" autocomplete="new-password" required>
+          <div id="reg-error" class="error-msg" hidden></div>
+          <button type="submit" class="btn btn-primary btn-big">Crea il mio account</button>
+          <p class="hint">Inserendo il tuo nome, RECA riconosce automaticamente la tua camera e i tuoi turni.</p>
+        </form>
+
+        <div class="divider"><span>oppure</span></div>
+
+        <button id="btn-qr-login" class="btn btn-ghost btn-big" type="button">
+          📷 Accedi con QR Code della camera
+        </button>
+        <p class="hint">Inquadra il QR Code sulla porta della tua camera, poi inserisci il tuo nome e la tua password.</p>
+      </div>
+    </section>
+
+    <!-- ============ APP PRINCIPALE ============ -->
+    <div id="main" hidden>
+      <header id="topbar">
+        <div class="topbar-left">
+          <img src="icons/favicon.png" alt="" class="topbar-logo">
+          <span class="topbar-name">RECA</span>
+        </div>
+        <div class="topbar-clock" id="topbar-clock" title="Ora in tempo reale">
+          <span id="clock-time">--:--:--</span>
+          <span id="clock-day" class="clock-day"></span>
+        </div>
+        <button id="glow-toggle-top" class="glow-toggle" type="button" title="Accendi/spegni bordo LED" aria-label="Accendi o spegni il bordo LED RGB">
+          <span class="glow-dot"></span>
+        </button>
+      </header>
+
+      <main id="pages">
+        <section id="page-oggi" class="page"></section>
+        <section id="page-bucato" class="page" hidden></section>
+        <section id="page-cucina" class="page" hidden></section>
+        <section id="page-bagno-ragazzi" class="page" hidden></section>
+        <section id="page-bagno-femminile" class="page" hidden></section>
+        <section id="page-bagno-giu" class="page" hidden></section>
+        <section id="page-sala" class="page" hidden></section>
+        <section id="page-profilo" class="page" hidden></section>
+      </main>
+
+      <nav id="bottomnav" aria-label="Menu principale">
+        <button class="nav-item active" data-page="oggi" type="button"><span class="nav-ico">🏠</span><span class="nav-lbl">Oggi</span></button>
+        <button class="nav-item" data-page="bucato" type="button"><span class="nav-ico">🧺</span><span class="nav-lbl">Bucato</span></button>
+        <button class="nav-item" data-page="cucina" type="button"><span class="nav-ico">🍽️</span><span class="nav-lbl">Cucina</span></button>
+        <button class="nav-item" data-page="bagno-ragazzi" type="button"><span class="nav-ico">🚿</span><span class="nav-lbl">B. Ragazzi</span></button>
+        <button class="nav-item" data-page="bagno-femminile" type="button"><span class="nav-ico">🛁</span><span class="nav-lbl">B. Femminile</span></button>
+        <button class="nav-item" data-page="bagno-giu" type="button"><span class="nav-ico">🚽</span><span class="nav-lbl">B. Giù</span></button>
+        <button class="nav-item" data-page="sala" type="button"><span class="nav-ico">🧹</span><span class="nav-lbl">Sala</span></button>
+        <button class="nav-item" data-page="profilo" type="button"><span class="nav-ico">👤</span><span class="nav-lbl">Profilo</span></button>
+      </nav>
+    </div>
+
+    <!-- ============ AREA ADMIN ============ -->
+    <section id="screen-admin" class="screen" hidden>
+      <div class="admin-box">
+        <div id="admin-login-wrap">
+          <h1 class="gate-title">⚙️ Area Admin</h1>
+          <p class="gate-sub">Accesso riservato</p>
+          <form id="form-admin" class="login-form">
+            <label class="field-label" for="admin-user">Nome utente</label>
+            <input type="text" id="admin-user" class="input" autocomplete="username" required>
+            <label class="field-label" for="admin-pass">Password</label>
+            <input type="password" id="admin-pass" class="input" autocomplete="current-password" required>
+            <div id="admin-error" class="error-msg" hidden></div>
+            <button type="submit" class="btn btn-primary btn-big">Entra</button>
+            <button type="button" id="admin-back" class="btn btn-ghost">← Torna all'app</button>
+          </form>
+        </div>
+        <div id="admin-panel" hidden></div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Toast di notifica in-app -->
+  <div id="toast" class="toast" hidden></div>
+
+  <!-- ============ OVERLAY SCANNER QR ============ -->
+  <div id="qr-overlay" hidden>
+    <div class="qr-box">
+      <div class="qr-head">
+        <h2 id="qr-title">Scanner QR Code</h2>
+        <button id="qr-close" class="btn btn-ghost" type="button">✕ Chiudi</button>
+      </div>
+      <p class="hint" id="qr-hint">Inquadra il QR Code sulla porta della camera.</p>
+      <div class="qr-view">
+        <video id="qr-video" playsinline muted></video>
+        <canvas id="qr-canvas" hidden></canvas>
+        <div class="qr-frame" id="qr-frame"></div>
+        <div id="qr-status" class="qr-status">Avvio fotocamera…</div>
+      </div>
+      <div id="qr-result" class="qr-result" hidden></div>
+    </div>
+  </div>
+
+  <!-- ============ SCRIPTS ============ -->
+  <script src="jsqr.min.js"></script>
+  <script src="qrcodegen.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
